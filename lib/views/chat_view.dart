@@ -54,7 +54,10 @@ class _ChatViewState extends State<ChatView> {
               child: ListView.builder(
                 itemCount: 6,
                 itemBuilder: (context, index) {
-                  return const ChatWidget();
+                  return ChatWidget(
+                    chatIndex: chatMessages[index]['chatIndex'] as int,
+                    message: chatMessages[index]['msg'] as String,
+                  );
                 },
               ),
             ),
