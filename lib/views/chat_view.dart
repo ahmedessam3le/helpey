@@ -39,7 +39,9 @@ class _ChatViewState extends State<ChatView> {
         title: const Text('Helpey'),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () async {
+              await Constants.showAIModelBottomSheet(context: context);
+            },
             icon: const Icon(
               Icons.more_vert_rounded,
               color: Colors.white,
@@ -55,8 +57,9 @@ class _ChatViewState extends State<ChatView> {
                 itemCount: 6,
                 itemBuilder: (context, index) {
                   return ChatWidget(
-                    chatIndex: chatMessages[index]['chatIndex'] as int,
-                    message: chatMessages[index]['msg'] as String,
+                    chatIndex:
+                        Constants.chatMessages[index]['chatIndex'] as int,
+                    message: Constants.chatMessages[index]['msg'] as String,
                   );
                 },
               ),
@@ -69,7 +72,7 @@ class _ChatViewState extends State<ChatView> {
             ],
             const SizedBox(height: 16),
             Material(
-              color: cardColor,
+              color: Constants.cardColor,
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Row(

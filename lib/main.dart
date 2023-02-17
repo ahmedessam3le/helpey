@@ -17,14 +17,14 @@ class MyApp extends StatelessWidget {
       title: 'Helpey',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        scaffoldBackgroundColor: scaffoldBackgroundColor,
+        scaffoldBackgroundColor: Constants.scaffoldBackgroundColor,
         appBarTheme: AppBarTheme(
           systemOverlayStyle: SystemUiOverlayStyle(
-            statusBarColor: cardColor,
+            statusBarColor: Constants.cardColor,
             statusBarBrightness: Brightness.light,
             statusBarIconBrightness: Brightness.light,
           ),
-          color: cardColor,
+          color: Constants.cardColor,
           elevation: 2,
         ),
       ),
