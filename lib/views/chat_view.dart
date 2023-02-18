@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:helpey/constants/assets_manager.dart';
 import 'package:helpey/constants/constants.dart';
+import 'package:helpey/services/api_services.dart';
 import 'package:helpey/widgets/chat_widget.dart';
 
 class ChatView extends StatefulWidget {
@@ -91,7 +92,9 @@ class _ChatViewState extends State<ChatView> {
                       ),
                     ),
                     IconButton(
-                      onPressed: () {},
+                      onPressed: () async {
+                        await ApiServices.getAIModels();
+                      },
                       icon: const Icon(
                         Icons.send,
                         color: Colors.white,
