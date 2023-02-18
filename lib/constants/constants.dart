@@ -41,29 +41,29 @@ class Constants {
     );
   }
 
-  static final List<String> _models = [
-    'Model 1',
-    'Model 2',
-    'Model 3',
-    'Model 4',
-    'Model 5',
-    'Model 6',
-  ];
-
-  static List<DropdownMenuItem<String>>? get getModelItems {
-    List<DropdownMenuItem<String>>? modelsItems =
-        List<DropdownMenuItem<String>>.generate(
-      _models.length,
-      (index) => DropdownMenuItem(
-        value: _models[index],
-        child: TextWidget(
-          label: _models[index],
-          fontSize: 15,
-        ),
-      ),
-    );
-    return modelsItems;
-  }
+  // static final List<String> _models = [
+  //   'Model 1',
+  //   'Model 2',
+  //   'Model 3',
+  //   'Model 4',
+  //   'Model 5',
+  //   'Model 6',
+  // ];
+  //
+  // static List<DropdownMenuItem<String>>? get getModelItems {
+  //   List<DropdownMenuItem<String>>? modelsItems =
+  //       List<DropdownMenuItem<String>>.generate(
+  //     _models.length,
+  //     (index) => DropdownMenuItem(
+  //       value: _models[index],
+  //       child: TextWidget(
+  //         label: _models[index],
+  //         fontSize: 15,
+  //       ),
+  //     ),
+  //   );
+  //   return modelsItems;
+  // }
 
   static final chatMessages = [
     {
