@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:helpey/constants/assets_manager.dart';
@@ -93,7 +95,11 @@ class _ChatViewState extends State<ChatView> {
                     ),
                     IconButton(
                       onPressed: () async {
-                        await ApiServices.getAIModels();
+                        ApiServices.getAIModels().then((value) {
+                          for (var model in value) {
+                            log(model.id);
+                          }
+                        });
                       },
                       icon: const Icon(
                         Icons.send,

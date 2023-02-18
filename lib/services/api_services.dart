@@ -1,12 +1,13 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
-import 'package:flutter/material.dart';
 import 'package:helpey/constants/api_constants.dart';
+import 'package:helpey/models/ai_model.dart';
 import 'package:http/http.dart' as http;
 
 class ApiServices {
-  static Future<void> getAIModels() async {
+  static Future<List<AIModel>> getAIModels() async {
     try {
       var response = await http.get(
         Uri.parse(ApiConstants.modelsEndPoint),
@@ -17,13 +18,12 @@ class ApiServices {
       Map jsonResponse = jsonDecode(response.body);
 
       if (jsonResponse['error'] != null) {
-        debugPrint(
-            '-------- getAIModels ERROR -------- \n${jsonResponse['error']['message']}');
         throw HttpException(jsonResponse['error']['message']);
       }
-      debugPrint('-------- getAIModels RESPONSE -------- \n$jsonResponse');
+      return AIModel.getAIModels(jsonResponse['data']);
     } catch (error) {
-      debugPrint('-------- getAIModels ERROR -------- \n$error');
+      log('-------- getAIModels ERROR -------- \n$error');
+      rethrow;
     }
   }
 }
