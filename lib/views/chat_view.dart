@@ -140,9 +140,21 @@ class _ChatViewState extends State<ChatView> {
     );
   }
 
-  Future<void> sendMessage(
-      {required AIModelsViewModel aiViewModel,
-      required ChatViewModel chatViewModel}) async {
+  Future<void> sendMessage({
+    required AIModelsViewModel aiViewModel,
+    required ChatViewModel chatViewModel,
+  }) async {
+    if (_textEditingController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          backgroundColor: Colors.red,
+          content: TextWidget(
+            label: 'Please type a message',
+          ),
+        ),
+      );
+      return;
+    }
     setState(() {
       _isTyping = true;
       // chatList.add(
