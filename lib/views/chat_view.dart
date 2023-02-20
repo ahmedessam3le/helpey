@@ -1,11 +1,12 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:helpey/constants/assets_manager.dart';
 import 'package:helpey/constants/constants.dart';
 import 'package:helpey/services/api_services.dart';
 import 'package:helpey/widgets/chat_widget.dart';
+import 'package:provider/provider.dart';
+
+import '../view_models/ai_models_view_model.dart';
 
 class ChatView extends StatefulWidget {
   const ChatView({Key? key}) : super(key: key);
@@ -15,7 +16,7 @@ class ChatView extends StatefulWidget {
 }
 
 class _ChatViewState extends State<ChatView> {
-  final bool _isTyping = true;
+  bool _isTyping = false;
 
   late TextEditingController _textEditingController;
 
@@ -33,6 +34,8 @@ class _ChatViewState extends State<ChatView> {
 
   @override
   Widget build(BuildContext context) {
+    final aiModelsViewModel =
+        Provider.of<AIModelsViewModel>(context, listen: true);
     return Scaffold(
       appBar: AppBar(
         leading: Padding(
@@ -95,11 +98,17 @@ class _ChatViewState extends State<ChatView> {
                     ),
                     IconButton(
                       onPressed: () async {
-                        ApiServices.getAIModels().then((value) {
-                          for (var model in value) {
-                            log(model.id);
-                          }
+                        setState(() {
+                          _isTyping = true;
                         });
+                        final list = ApiServices.sendMessage(
+                          aiModel: aiModelsViewModel.currentModel,
+                          message: _textEditingController.text,
+                        ).whenComplete(
+                          () => setState(() {
+                            _isTyping = false;
+                          }),
+                        );
                       },
                       icon: const Icon(
                         Icons.send,
