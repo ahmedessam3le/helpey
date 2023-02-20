@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:helpey/constants/constants.dart';
 import 'package:helpey/view_models/ai_models_view_model.dart';
+import 'package:helpey/view_models/chat_view_model.dart';
 import 'package:provider/provider.dart';
 
 import 'views/chat_view.dart';
@@ -19,6 +20,9 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(
           create: (_) => AIModelsViewModel(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => ChatViewModel(),
         ),
       ],
       child: MaterialApp(

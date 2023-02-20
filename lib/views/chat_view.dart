@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:helpey/constants/assets_manager.dart';
 import 'package:helpey/constants/constants.dart';
-import 'package:helpey/models/chat_model.dart';
+import 'package:helpey/view_models/chat_view_model.dart';
 import 'package:helpey/widgets/chat_widget.dart';
 import 'package:provider/provider.dart';
 
-import '../services/api_services.dart';
 import '../view_models/ai_models_view_model.dart';
 
 class ChatView extends StatefulWidget {
@@ -18,7 +17,7 @@ class ChatView extends StatefulWidget {
 
 class _ChatViewState extends State<ChatView> {
   bool _isTyping = false;
-  List<ChatModel> chatList = [];
+  // List<ChatModel> chatList = [];
 
   late TextEditingController _textEditingController;
   late FocusNode _focusNode;
@@ -44,6 +43,7 @@ class _ChatViewState extends State<ChatView> {
   Widget build(BuildContext context) {
     final aiModelsViewModel =
         Provider.of<AIModelsViewModel>(context, listen: true);
+    final chatViewModel = Provider.of<ChatViewModel>(context, listen: true);
     return Scaffold(
       appBar: AppBar(
         leading: Padding(
@@ -70,11 +70,11 @@ class _ChatViewState extends State<ChatView> {
               child: ListView.builder(
                 physics: const BouncingScrollPhysics(),
                 controller: _scrollController,
-                itemCount: chatList.length,
+                itemCount: chatViewModel.chatList.length,
                 itemBuilder: (context, index) {
                   return ChatWidget(
-                    chatIndex: chatList[index].chatIndex,
-                    message: chatList[index].message,
+                    chatIndex: chatViewModel.chatList[index].chatIndex,
+                    message: chatViewModel.chatList[index].message,
                   );
                 },
               ),
@@ -102,13 +102,19 @@ class _ChatViewState extends State<ChatView> {
                           hintStyle: TextStyle(color: Colors.grey),
                         ),
                         onSubmitted: (value) async {
-                          await sendMessage(viewModel: aiModelsViewModel);
+                          await sendMessage(
+                            aiViewModel: aiModelsViewModel,
+                            chatViewModel: chatViewModel,
+                          );
                         },
                       ),
                     ),
                     IconButton(
                       onPressed: () async {
-                        await sendMessage(viewModel: aiModelsViewModel);
+                        await sendMessage(
+                          aiViewModel: aiModelsViewModel,
+                          chatViewModel: chatViewModel,
+                        );
                       },
                       icon: const Icon(
                         Icons.send,
@@ -133,25 +139,33 @@ class _ChatViewState extends State<ChatView> {
     );
   }
 
-  Future<void> sendMessage({required AIModelsViewModel viewModel}) async {
+  Future<void> sendMessage(
+      {required AIModelsViewModel aiViewModel,
+      required ChatViewModel chatViewModel}) async {
     setState(() {
       _isTyping = true;
-      chatList.add(
-        ChatModel(message: _textEditingController.text, chatIndex: 0),
-      );
+      // chatList.add(
+      //   ChatModel(message: _textEditingController.text, chatIndex: 0),
+      // );
+      chatViewModel.addUserMessage(message: _textEditingController.text);
       _textEditingController.clear();
       _focusNode.unfocus();
     });
-    chatList.addAll(
-      await ApiServices.sendMessage(
-        aiModel: viewModel.currentModel,
-        message: _textEditingController.text,
-      ).whenComplete(
-        () => setState(() {
-          _isTyping = false;
-          scrollChatToTheEnd();
-        }),
-      ),
+    await chatViewModel.sendMessage(
+      chosenModel: aiViewModel.currentModel,
+      message: _textEditingController.text,
     );
+    // chatList.addAll(
+    //   await ApiServices.sendMessage(
+    //     aiModel: aiViewModel.currentModel,
+    //     message: _textEditingController.text,
+    //   ).whenComplete(
+    //     () => ,
+    //   ),
+    // );
+    setState(() {
+      _isTyping = false;
+      scrollChatToTheEnd();
+    });
   }
 }
