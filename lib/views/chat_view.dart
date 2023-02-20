@@ -22,11 +22,13 @@ class _ChatViewState extends State<ChatView> {
 
   late TextEditingController _textEditingController;
   late FocusNode _focusNode;
+  late ScrollController _scrollController;
 
   @override
   void initState() {
     _textEditingController = TextEditingController();
     _focusNode = FocusNode();
+    _scrollController = ScrollController();
     super.initState();
   }
 
@@ -34,6 +36,7 @@ class _ChatViewState extends State<ChatView> {
   void dispose() {
     _textEditingController.dispose();
     _focusNode.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -65,6 +68,8 @@ class _ChatViewState extends State<ChatView> {
           children: [
             Flexible(
               child: ListView.builder(
+                physics: const BouncingScrollPhysics(),
+                controller: _scrollController,
                 itemCount: chatList.length,
                 itemBuilder: (context, index) {
                   return ChatWidget(
@@ -120,6 +125,14 @@ class _ChatViewState extends State<ChatView> {
     );
   }
 
+  void scrollChatToTheEnd() {
+    _scrollController.animateTo(
+      _scrollController.position.maxScrollExtent,
+      duration: const Duration(seconds: 2),
+      curve: Curves.easeOut,
+    );
+  }
+
   Future<void> sendMessage({required AIModelsViewModel viewModel}) async {
     setState(() {
       _isTyping = true;
@@ -136,6 +149,7 @@ class _ChatViewState extends State<ChatView> {
       ).whenComplete(
         () => setState(() {
           _isTyping = false;
+          scrollChatToTheEnd();
         }),
       ),
     );
