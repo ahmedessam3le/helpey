@@ -13,12 +13,10 @@ class ModelsDropDownWidget extends StatefulWidget {
 }
 
 class _ModelsDropDownWidgetState extends State<ModelsDropDownWidget> {
-  String? _currentModel;
   @override
   Widget build(BuildContext context) {
     final aiModelsViewModel =
-        Provider.of<AIModelsViewModel>(context, listen: false);
-    _currentModel = aiModelsViewModel.currentModel;
+        Provider.of<AIModelsViewModel>(context, listen: true);
     return FutureBuilder(
         future: aiModelsViewModel.fetchAIModels(),
         builder: (context, snapshot) {
@@ -41,11 +39,8 @@ class _ModelsDropDownWidgetState extends State<ModelsDropDownWidget> {
                         ),
                       ),
                     ),
-                    value: _currentModel,
+                    value: aiModelsViewModel.currentModel,
                     onChanged: (value) {
-                      setState(() {
-                        _currentModel = value.toString();
-                      });
                       aiModelsViewModel.setCurrentModel(value.toString());
                     },
                   ),
