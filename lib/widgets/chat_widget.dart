@@ -1,3 +1,4 @@
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:helpey/constants/assets_manager.dart';
 import 'package:helpey/constants/constants.dart';
@@ -33,7 +34,24 @@ class ChatWidget extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: TextWidget(label: message),
+                  child: chatIndex == 0
+                      ? TextWidget(label: message)
+                      : AnimatedTextKit(
+                          isRepeatingAnimation: false,
+                          repeatForever: false,
+                          displayFullTextOnTap: true,
+                          totalRepeatCount: 1,
+                          animatedTexts: [
+                            TyperAnimatedText(
+                              message.trim(),
+                              textStyle: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ],
+                        ),
                 ),
                 chatIndex == 0
                     ? const SizedBox.shrink()
