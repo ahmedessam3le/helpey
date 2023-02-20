@@ -32,7 +32,6 @@ class ApiServices {
     required String aiModel,
     required String message,
   }) async {
-    log('-------------- AI Model ------------ \n$aiModel');
     try {
       var response = await http.post(
         Uri.parse(ApiConstants.completionsEndPoint),

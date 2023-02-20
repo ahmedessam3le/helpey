@@ -18,7 +18,6 @@ class ChatView extends StatefulWidget {
 
 class _ChatViewState extends State<ChatView> {
   bool _isTyping = false;
-  // List<ChatModel> chatList = [];
 
   late TextEditingController _textEditingController;
   late FocusNode _focusNode;
@@ -102,21 +101,25 @@ class _ChatViewState extends State<ChatView> {
                           hintText: 'How can i help you ?',
                           hintStyle: TextStyle(color: Colors.grey),
                         ),
-                        onSubmitted: (value) async {
-                          await sendMessage(
-                            aiViewModel: aiModelsViewModel,
-                            chatViewModel: chatViewModel,
-                          );
-                        },
+                        onSubmitted: _isTyping
+                            ? null
+                            : (value) async {
+                                await sendMessage(
+                                  aiViewModel: aiModelsViewModel,
+                                  chatViewModel: chatViewModel,
+                                );
+                              },
                       ),
                     ),
                     IconButton(
-                      onPressed: () async {
-                        await sendMessage(
-                          aiViewModel: aiModelsViewModel,
-                          chatViewModel: chatViewModel,
-                        );
-                      },
+                      onPressed: _isTyping
+                          ? null
+                          : () async {
+                              await sendMessage(
+                                aiViewModel: aiModelsViewModel,
+                                chatViewModel: chatViewModel,
+                              );
+                            },
                       icon: const Icon(
                         Icons.send,
                         color: Colors.white,
@@ -155,19 +158,18 @@ class _ChatViewState extends State<ChatView> {
       );
       return;
     }
+    String typedMessage = _textEditingController.text;
     setState(() {
       _isTyping = true;
-      // chatList.add(
-      //   ChatModel(message: _textEditingController.text, chatIndex: 0),
-      // );
-      chatViewModel.addUserMessage(message: _textEditingController.text);
+
+      chatViewModel.addUserMessage(message: typedMessage);
       _textEditingController.clear();
       _focusNode.unfocus();
     });
     await chatViewModel
         .sendMessage(
       chosenModel: aiViewModel.currentModel,
-      message: _textEditingController.text,
+      message: typedMessage,
     )
         .catchError(
       (error) {
@@ -181,14 +183,6 @@ class _ChatViewState extends State<ChatView> {
         );
       },
     );
-    // chatList.addAll(
-    //   await ApiServices.sendMessage(
-    //     aiModel: aiViewModel.currentModel,
-    //     message: _textEditingController.text,
-    //   ).whenComplete(
-    //     () => ,
-    //   ),
-    // );
     setState(() {
       _isTyping = false;
       scrollChatToTheEnd();
