@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:helpey/services/api_services.dart';
+import 'package:helpey/view_models/ai_models_view_model.dart';
 import 'package:helpey/widgets/text_widget.dart';
+import 'package:provider/provider.dart';
 
 import '../constants/constants.dart';
 
@@ -12,11 +13,14 @@ class ModelsDropDownWidget extends StatefulWidget {
 }
 
 class _ModelsDropDownWidgetState extends State<ModelsDropDownWidget> {
-  String _currentModel = 'text-davinci-003';
+  String? _currentModel;
   @override
   Widget build(BuildContext context) {
+    final aiModelsViewModel =
+        Provider.of<AIModelsViewModel>(context, listen: false);
+    _currentModel = aiModelsViewModel.currentModel;
     return FutureBuilder(
-        future: ApiServices.getAIModels(),
+        future: aiModelsViewModel.fetchAIModels(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return TextWidget(label: snapshot.error.toString());
@@ -42,6 +46,7 @@ class _ModelsDropDownWidgetState extends State<ModelsDropDownWidget> {
                       setState(() {
                         _currentModel = value.toString();
                       });
+                      aiModelsViewModel.setCurrentModel(value.toString());
                     },
                   ),
                 );
