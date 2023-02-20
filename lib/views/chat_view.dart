@@ -4,6 +4,7 @@ import 'package:helpey/constants/assets_manager.dart';
 import 'package:helpey/constants/constants.dart';
 import 'package:helpey/view_models/chat_view_model.dart';
 import 'package:helpey/widgets/chat_widget.dart';
+import 'package:helpey/widgets/text_widget.dart';
 import 'package:provider/provider.dart';
 
 import '../view_models/ai_models_view_model.dart';
@@ -151,9 +152,22 @@ class _ChatViewState extends State<ChatView> {
       _textEditingController.clear();
       _focusNode.unfocus();
     });
-    await chatViewModel.sendMessage(
+    await chatViewModel
+        .sendMessage(
       chosenModel: aiViewModel.currentModel,
       message: _textEditingController.text,
+    )
+        .catchError(
+      (error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.red,
+            content: TextWidget(
+              label: error.toString(),
+            ),
+          ),
+        );
+      },
     );
     // chatList.addAll(
     //   await ApiServices.sendMessage(
