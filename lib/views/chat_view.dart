@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:helpey/constants/assets_manager.dart';
 import 'package:helpey/constants/constants.dart';
-import 'package:helpey/services/api_services.dart';
+import 'package:helpey/models/chat_model.dart';
 import 'package:helpey/widgets/chat_widget.dart';
 import 'package:provider/provider.dart';
 
+import '../services/api_services.dart';
 import '../view_models/ai_models_view_model.dart';
 
 class ChatView extends StatefulWidget {
@@ -17,18 +18,22 @@ class ChatView extends StatefulWidget {
 
 class _ChatViewState extends State<ChatView> {
   bool _isTyping = false;
+  List<ChatModel> chatList = [];
 
   late TextEditingController _textEditingController;
+  late FocusNode _focusNode;
 
   @override
   void initState() {
     _textEditingController = TextEditingController();
+    _focusNode = FocusNode();
     super.initState();
   }
 
   @override
   void dispose() {
     _textEditingController.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
@@ -60,12 +65,11 @@ class _ChatViewState extends State<ChatView> {
           children: [
             Flexible(
               child: ListView.builder(
-                itemCount: 6,
+                itemCount: chatList.length,
                 itemBuilder: (context, index) {
                   return ChatWidget(
-                    chatIndex:
-                        Constants.chatMessages[index]['chatIndex'] as int,
-                    message: Constants.chatMessages[index]['msg'] as String,
+                    chatIndex: chatList[index].chatIndex,
+                    message: chatList[index].message,
                   );
                 },
               ),
@@ -86,29 +90,20 @@ class _ChatViewState extends State<ChatView> {
                     Expanded(
                       child: TextField(
                         controller: _textEditingController,
+                        focusNode: _focusNode,
                         style: const TextStyle(color: Colors.white),
                         decoration: const InputDecoration.collapsed(
                           hintText: 'How can i help you ?',
                           hintStyle: TextStyle(color: Colors.grey),
                         ),
-                        onSubmitted: (value) {
-                          //TODO Send Message
+                        onSubmitted: (value) async {
+                          await sendMessage(viewModel: aiModelsViewModel);
                         },
                       ),
                     ),
                     IconButton(
                       onPressed: () async {
-                        setState(() {
-                          _isTyping = true;
-                        });
-                        final list = ApiServices.sendMessage(
-                          aiModel: aiModelsViewModel.currentModel,
-                          message: _textEditingController.text,
-                        ).whenComplete(
-                          () => setState(() {
-                            _isTyping = false;
-                          }),
-                        );
+                        await sendMessage(viewModel: aiModelsViewModel);
                       },
                       icon: const Icon(
                         Icons.send,
@@ -121,6 +116,27 @@ class _ChatViewState extends State<ChatView> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Future<void> sendMessage({required AIModelsViewModel viewModel}) async {
+    setState(() {
+      _isTyping = true;
+      chatList.add(
+        ChatModel(message: _textEditingController.text, chatIndex: 0),
+      );
+      _textEditingController.clear();
+      _focusNode.unfocus();
+    });
+    chatList.addAll(
+      await ApiServices.sendMessage(
+        aiModel: viewModel.currentModel,
+        message: _textEditingController.text,
+      ).whenComplete(
+        () => setState(() {
+          _isTyping = false;
+        }),
       ),
     );
   }
